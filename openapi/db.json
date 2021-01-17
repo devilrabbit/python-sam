@@ -1,0 +1,1 @@
+{"/pets": {"GET": ["read", "write"], "POST": ["public"]}, "/pets/{petId}": {"GET": ["public"]}}
