@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  app
+
+  Sample SAM Template for app
+
+Parameters:
+  QueueArn:
+    Type: String
+  Enabled:
+    Type: String
+    Default: false
+    AllowedValues: [true, false]
+
+Conditions:
+  ShouldEnable:
+    !Equals [true, !Ref Enabled]
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: hello_world/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Events:
+        SQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !Ref QueueArn
+            Enabled: ShouldEnable
+            BatchSize: 10
+      Timeout: 25
+      Policies:
+        - AWSLambdaBasicExecutionRole
+
+Outputs:
+  HelloWorldFunction:
+    Description: "Hello World Lambda Function ARN"
+    Value: !GetAtt HelloWorldFunction.Arn
+  HelloWorldFunctionIamRole:
+    Description: "Implicit IAM Role created for Hello World function"
+    Value: !GetAtt HelloWorldFunctionRole.Arn
